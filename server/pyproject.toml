@@ -14,6 +14,8 @@ dependencies = [
 [tool.poetry]
 packages = [{include = "usermanager", from = "src"}]
 
+[tool.poetry.scripts]
+start = "usermanager.main:start"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
