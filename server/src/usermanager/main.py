@@ -47,6 +47,8 @@ def get_all_users_by_id(id):
             filtered_users.append(u)
     if len(filtered_users) == 0:
         return "User not found", 404
+    if len(filtered_users) > 1:
+        return "Multiple users found", 500
     return [u.to_json() for u in filtered_users], 200
 
 def start():
