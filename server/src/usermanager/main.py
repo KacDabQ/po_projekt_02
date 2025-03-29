@@ -40,7 +40,7 @@ def get_all_users():
     return [u.to_json() for u in users], 200
 
 @app.route("/users/<int:id>", methods=['GET'])
-def get_all_users_by_id(id):
+def get_user_by_id(id):
     filtered_users = []
     for u in users:
         if u.id == id:
