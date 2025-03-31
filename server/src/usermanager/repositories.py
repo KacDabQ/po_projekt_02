@@ -13,7 +13,7 @@ class User():
 
 
     def to_json(self):
-        return {    
+        return {
             "id": self.id,
             "firstname": self.firstname,
             "lastname": self.lastname,

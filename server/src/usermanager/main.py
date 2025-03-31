@@ -1,10 +1,10 @@
 from flask import Flask, request
+from usermanager.controllers import NonExistingGroup, UserController
 from usermanager.repositories import User, UserNotFound, UserRepository
 
 app = Flask(__name__)
 user_repository = UserRepository()
 
-allowed_groups = ["user", "premium", "admin"]
 
 @app.route("/")
 def main_menu():
@@ -24,20 +24,13 @@ def get_user_by_id(id):
     return user.to_json(), 200
 
 
-
 @app.route("/users", methods=["POST"])
 def create_user():
-    first_name = request.json.get("firstname")
-    last_name = request.json.get("lastname")
-    birth_year = request.json.get("birthyear")
-    group = request.json.get("group")
-
-    if any(group in x for x in allowed_groups):
-        user = User(0, first_name, last_name, birth_year, group)
-        user_repository.add(user)
-        return {"id": user.id}, 200
-    
-    else:
+    controller = UserController(user_repository)
+    try:
+        created_user = controller.create(request.json)
+        return {"id": created_user.id}, 200
+    except NonExistingGroup:
         return "Non-existant group passed", 400
 
 
