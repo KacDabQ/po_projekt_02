@@ -1,20 +1,10 @@
 from flask import Flask, request
-from usermanager.repositories import Person
-
-
-
+from usermanager.repositories import User, UserNotFound, UserRepository
 
 app = Flask(__name__)
-
-
-
-
+user_repository = UserRepository()
 
 allowed_groups = ["user", "premium", "admin"]
-
-
-users = [Person(1, "John", "Doe", 1995, "admin"), Person(2, "Jane", "Doe", 1976, "user")]
-
 
 @app.route("/")
 def main_menu():
@@ -22,21 +12,16 @@ def main_menu():
 
 @app.route("/users", methods=['GET'])
 def get_all_users():
-    return [u.to_json() for u in users], 200
-
+    return [p.to_json() for p in user_repository.get_all()], 200
 
 
 @app.route("/users/<int:id>", methods=["GET"])
 def get_user_by_id(id):
-    filtered_users = []
-    for u in users:
-        if u.id == id:
-            filtered_users.append(u)
-    if len(filtered_users) == 0:
+    user = user_repository.get_by_id(id)
+    if user is None:
         return "User not found", 404
-    if len(filtered_users) > 1:
-        return "Multiple users found", 500
-    return filtered_users[0].to_json(), 200
+
+    return user.to_json(), 200
 
 
 
@@ -48,41 +33,26 @@ def create_user():
     group = request.json.get("group")
 
     if any(group in x for x in allowed_groups):
-
-        max_id = 0
-        for u in users:
-            if u.id > max_id:
-                max_id = u.id
-
-        new_id = max_id + 1
-        person = Person(new_id, first_name, last_name, birth_year, group)
-        users.append(person)
-        return {"id": new_id}, 200
+        user = User(0, first_name, last_name, birth_year, group)
+        user_repository.add(user)
+        return {"id": user.id}, 200
     
     else:
         return "Non-existant group passed", 400
-    
 
 
 @app.route("/users", methods=["PATCH"])
 def update_user(id):
     pass
-    
 
 
 @app.route("/users/<int:id>", methods=["DELETE"])
 def delete_user_by_id(id):
-    to_delete = -1
-    for i, u in enumerate(users):
-        if u.id == id:
-            to_delete = i
-
-    if to_delete > -1:
-        users.pop(to_delete)
+    try:
+        user_repository.delete_by_id(id)
         return "Succesfully deleted person", 200
-    
-    return "User not found", 404
-
+    except UserNotFound:
+        return "User not found", 404
 
 
 def start():

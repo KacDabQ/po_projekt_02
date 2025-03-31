@@ -3,7 +3,7 @@ from datetime import datetime
 
 year = datetime.now().year
 
-class Person():
+class User():
     def __init__(self, id:int, firstname:str, lastname:str, birthyear:int, group:str):
         self.id = id
         self.firstname = firstname
@@ -21,10 +21,10 @@ class Person():
             "group": self.group
         }
 
-class PersonNotFound(Exception):
+class UserNotFound(Exception):
     pass
 
-class PersonRepository():
+class UserRepository():
     def __init__(self):
         self.storage = []
 
@@ -38,13 +38,13 @@ class PersonRepository():
 
         return None
 
-    def add(self, person: Person):
+    def add(self, user: User):
         max_id = 0
         for u in self.storage:
             if u.id > max_id:
                 max_id = u.id
-        person.id = max_id + 1
-        self.storage.append(person);
+        user.id = max_id + 1
+        self.storage.append(user);
 
     def delete_by_id(self, id: int):
         to_delete = -1
@@ -56,4 +56,4 @@ class PersonRepository():
             self.storage.pop(to_delete)
             return
         
-        raise PersonNotFound
+        raise UserNotFound

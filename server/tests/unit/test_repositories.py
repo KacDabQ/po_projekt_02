@@ -1,50 +1,50 @@
 import pytest
-from usermanager.repositories import Person, PersonNotFound, PersonRepository
+from usermanager.repositories import User, UserNotFound, UserRepository
 
 @pytest.fixture
 def repository():
-    return PersonRepository()
+    return UserRepository()
 
 def test_get_non_existing_user(repository):
-    person = repository.get_by_id(99999999)
+    user = repository.get_by_id(99999999)
 
-    assert person is None
+    assert user is None
 
 def test_get_all_no_data(repository):
-    persons = repository.get_all()
-    assert persons is not None
-    assert len(persons) == 0
+    users = repository.get_all()
+    assert users is not None
+    assert len(users) == 0
 
 def test_get_all_with_data(repository):
-    person = Person(0, "John", "Doe", 1995, "admin")
-    repository.add(person)
-    person = Person(0, "John", "Doe", 1995, "admin")
-    repository.add(person)
+    user = User(0, "John", "Doe", 1995, "admin")
+    repository.add(user)
+    user = User(0, "John", "Doe", 1995, "admin")
+    repository.add(user)
 
-    persons = repository.get_all()
-    assert len(persons) == 2
+    users = repository.get_all()
+    assert len(users) == 2
 
-def test_create_person(repository):
-    person = Person(0, "John", "Doe", 1995, "admin")
+def test_create_user(repository):
+    user = User(0, "John", "Doe", 1995, "admin")
 
-    repository.add(person)
+    repository.add(user)
 
-    person = repository.get_by_id(person.id)
-    assert person is not None
-    assert person.id > 0
-
-
-def test_delete_existing_person(repository):
-    person = Person(0, "John", "Doe", 1995, "admin")
-    repository.add(person)
-
-    repository.delete_by_id(person.id)
-
-    person = repository.get_by_id(person.id)
-
-    assert person is None
+    user = repository.get_by_id(user.id)
+    assert user is not None
+    assert user.id > 0
 
 
-def test_delete_non_existing_person(repository):
-    with pytest.raises(PersonNotFound):
+def test_delete_existing_user(repository):
+    user = User(0, "John", "Doe", 1995, "admin")
+    repository.add(user)
+
+    repository.delete_by_id(user.id)
+
+    user = repository.get_by_id(user.id)
+
+    assert user is None
+
+
+def test_delete_non_existing_user(repository):
+    with pytest.raises(UserNotFound):
         repository.delete_by_id(99999)
