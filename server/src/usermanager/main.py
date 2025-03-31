@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from datetime import datetime
 
 
@@ -35,21 +35,6 @@ class Person():
 users = [Person(1, "John", "Doe", 1995, "admin"), Person(2, "Jane", "Doe", 1976, "user")]
 
 
-
-def _create_user_from_request(id, request):
-    from . import db
-    name = request.json.get('name')
-    lastname = request.json.get('lastname')
-    user_id = id
-    if id is None:
-        current_maximum_id = 0
-        for u in db.users:
-            if current_maximum_id < u['id']:
-                current_maximum_id = u['id']
-        user_id = current_maximum_id + 1
-
-
-
 @app.route("/")
 def main_menu():
     return "<h1>Hello world!</h1>", 200
@@ -70,7 +55,7 @@ def get_user_by_id(id):
         return "User not found", 404
     if len(filtered_users) > 1:
         return "Multiple users found", 500
-    return [u.to_json() for u in filtered_users], 200
+    return filtered_users[0].to_json(), 200
 
 
 
@@ -89,7 +74,7 @@ def create_user():
     new_id = max_id + 1
     person = Person(new_id, first_name, last_name, birth_year, group)
     users.append(person)
-    return "Succesfully added user with id %s" % new_id, 200
+    return {"id": new_id}, 200
 
 
 @app.route("/users/<int:id>", methods=["DELETE"])
