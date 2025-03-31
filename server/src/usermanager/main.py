@@ -34,9 +34,17 @@ def create_user():
         return "Non-existant group passed", 400
 
 
-@app.route("/users", methods=["PATCH"])
+@app.route("/users/<int:id>", methods=["PATCH"])
 def update_user(id):
-    pass
+    controller = UserController(user_repository)
+    try:
+        controller.update(id, request.json)
+        return "User updated", 200
+    except UserNotFound:
+        return "There is no such user", 404
+    except NonExistingGroup:
+        return "Non-existant group passed", 400
+
 
 
 @app.route("/users/<int:id>", methods=["DELETE"])

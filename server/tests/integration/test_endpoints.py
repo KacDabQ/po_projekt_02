@@ -66,3 +66,58 @@ def test_create_user_with_non_existant_group(tested_group: str, expected_status_
         "group": tested_group
     })
     assert response.status_code == expected_status_code
+
+def test_update_non_existing_user(client: FlaskClient) -> None:
+    response = client.patch('/users/99999999', json={
+        "firstname": "John",
+        "lastname": "Doe"
+    })
+
+    assert response.status_code == 404
+
+def test_update_existing_user(client: FlaskClient) -> None:
+    response = client.post('/users', json={
+        "firstname": "John",
+        "lastname": "Doe",
+        "birthyear": 1995,
+        "group": "admin"
+    })
+    created_user_id = response.json['id']
+
+    response = client.patch(f'/users/{created_user_id}', json={
+        "firstname": "Jane",
+        "lastname": "Dough"
+    })
+
+    assert response.status_code == 200
+
+    response = client.get(f'/users/{created_user_id}')
+    assert response.status_code == 200
+    assert response.json['firstname'] == 'Jane'
+    assert response.json['lastname'] == 'Dough'
+    assert response.json['age'] == 30
+    assert response.json['group'] == 'admin'
+
+def test_update_existing_user_with_wrong_group(client: FlaskClient) -> None:
+    response = client.post('/users', json={
+        "firstname": "John",
+        "lastname": "Doe",
+        "birthyear": 1995,
+        "group": "admin"
+    })
+    created_user_id = response.json['id']
+
+    response = client.patch(f'/users/{created_user_id}', json={
+        "firstname": "Jane",
+        "lastname": "Dough",
+        "group": "not existing",
+    })
+
+    assert response.status_code == 400
+
+    response = client.get(f'/users/{created_user_id}')
+    assert response.status_code == 200
+    assert response.json['firstname'] == 'John'
+    assert response.json['lastname'] == 'Doe'
+    assert response.json['age'] == 30
+    assert response.json['group'] == 'admin'

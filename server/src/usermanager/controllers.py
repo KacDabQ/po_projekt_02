@@ -1,4 +1,4 @@
-from usermanager.repositories import User, UserRepository
+from usermanager.repositories import User, UserNotFound, UserRepository
 
 
 allowed_groups = ["user", "premium", "admin"]
@@ -22,3 +22,23 @@ class UserController():
             return user
 
         raise NonExistingGroup
+
+    def update(self, id, dict) -> None:
+        user = self.user_repository.get_by_id(id)
+        if user is None:
+            raise UserNotFound
+
+        if "group" in dict and any(dict["group"] in x for x in allowed_groups) == False:
+            raise NonExistingGroup
+
+        if "firstname" in dict:
+            user.firstname = dict["firstname"]
+
+        if "lastname" in dict:
+            user.lastname = dict["lastname"]
+
+        if "birthyear" in dict:
+            user.birthyear = dict["birthyear"]
+
+        if "group" in dict:
+            user.group = dict["group"]
