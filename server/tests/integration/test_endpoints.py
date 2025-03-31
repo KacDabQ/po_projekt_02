@@ -1,4 +1,5 @@
 from flask.testing import FlaskClient
+import pytest
 from usermanager.main import app
 from pytest import fixture
 
@@ -52,12 +53,16 @@ def test_delete_user(client: FlaskClient) -> None:
     response = client.get(f'/users{new_id}')
     assert response.status_code == 404
 
-
-def test_create_user_with_non_existant_group(client: FlaskClient) -> None:
+@pytest.mark.parametrize("tested_group,expected_status_code", [
+    ("admin", 200),
+    ("premium", 200),
+    ("user", 200),
+    ("root", 400)])
+def test_create_user_with_non_existant_group(tested_group: str, expected_status_code: int, client: FlaskClient) -> None:
     response = client.post('/users', json={
         "firstname": "John",
         "lastname": "Doe",
         "birthyear": 1995,
-        "group": "something"
+        "group": tested_group
     })
-    assert response.status_code == 400
+    assert response.status_code == expected_status_code
