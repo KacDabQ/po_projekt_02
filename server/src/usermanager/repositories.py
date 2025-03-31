@@ -21,13 +21,15 @@ class Person():
             "group": self.group
         }
 
+class PersonNotFound(Exception):
+    pass
 
 class PersonRepository():
     def __init__(self):
         self.storage = []
 
     def get_all(self):
-        pass
+        return self.storage
 
     def get_by_id(self, id: int):
         for u in self.storage:
@@ -45,4 +47,13 @@ class PersonRepository():
         self.storage.append(person);
 
     def delete_by_id(self, id: int):
-        pass
+        to_delete = -1
+        for i, u in enumerate(self.storage):
+            if u.id == id:
+                to_delete = i
+
+        if to_delete > -1:
+            self.storage.pop(to_delete)
+            return
+        
+        raise PersonNotFound
