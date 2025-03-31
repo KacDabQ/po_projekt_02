@@ -1,31 +1,12 @@
 from flask import Flask, request
-from datetime import datetime
+from usermanager.repositories import Person
+
 
 
 
 app = Flask(__name__)
 
 
-year = datetime.now().year
-
-
-class Person():
-    def __init__(self, id:int, firstname:str, lastname:str, birthyear:int, group:str):
-        self.id = id
-        self.firstname = firstname
-        self.lastname = lastname
-        self.birthyear = birthyear
-        self.group = group
-
-
-    def to_json(self):
-        return {    
-            "id": self.id,
-            "firstname": self.firstname,
-            "lastname": self.lastname,
-            "age": year - self.birthyear,
-            "group": self.group
-        }
 
 
 
@@ -80,6 +61,13 @@ def create_user():
     
     else:
         return "Non-existant group passed", 400
+    
+
+
+@app.route("/users", methods=["PATCH"])
+def update_user(id):
+    pass
+    
 
 
 @app.route("/users/<int:id>", methods=["DELETE"])
