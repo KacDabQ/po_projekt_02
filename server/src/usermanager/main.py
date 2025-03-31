@@ -29,7 +29,7 @@ class Person():
 
 
 
-
+allowed_groups = ["user", "premium", "admin"]
 
 
 users = [Person(1, "John", "Doe", 1995, "admin"), Person(2, "Jane", "Doe", 1976, "user")]
@@ -66,15 +66,20 @@ def create_user():
     birth_year = request.json.get("birthyear")
     group = request.json.get("group")
 
-    max_id = 0
-    for u in users:
-        if u.id > max_id:
-            max_id = u.id
+    if any(group in x for x in allowed_groups):
 
-    new_id = max_id + 1
-    person = Person(new_id, first_name, last_name, birth_year, group)
-    users.append(person)
-    return {"id": new_id}, 200
+        max_id = 0
+        for u in users:
+            if u.id > max_id:
+                max_id = u.id
+
+        new_id = max_id + 1
+        person = Person(new_id, first_name, last_name, birth_year, group)
+        users.append(person)
+        return {"id": new_id}, 200
+    
+    else:
+        return "Non-existant group passed", 400
 
 
 @app.route("/users/<int:id>", methods=["DELETE"])

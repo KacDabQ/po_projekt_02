@@ -6,6 +6,7 @@ from pytest import fixture
 def client() -> FlaskClient:
     return app.test_client()
 
+
 def test_get_users_returs_list_of_users(client: FlaskClient) -> None:
     response = client.get('/users')
     assert response.status_code == 200
@@ -34,6 +35,7 @@ def test_create_user(client: FlaskClient) -> None:
     assert response.json['age'] == 30
     assert response.json['group'] == 'admin'
 
+
 def test_delete_user(client: FlaskClient) -> None:
     response = client.post('/users', json={
         "firstname": "John",
@@ -49,3 +51,13 @@ def test_delete_user(client: FlaskClient) -> None:
 
     response = client.get(f'/users{new_id}')
     assert response.status_code == 404
+
+
+def test_create_user_with_non_existant_group(client: FlaskClient) -> None:
+    response = client.post('/users', json={
+        "firstname": "John",
+        "lastname": "Doe",
+        "birthyear": 1995,
+        "group": "something"
+    })
+    assert response.status_code == 400
