@@ -46,3 +46,30 @@ def test_user_controller_create_with_wrong_group_not_call_add_in_repository(
         controller.create(dict)
 
     repository.add.assert_not_called()
+
+def test_user_controller_delete_calls_delete_by_id_in_repository(
+        controller: UserController,
+        repository: Mock):
+    controller.delete(999)
+
+    expected = call(999)
+
+    assert expected in repository.delete_by_id.mock_calls
+
+def test_user_controller_get_all_calls_get_all_in_repository(
+        controller: UserController,
+        repository: Mock):
+    controller.get_all()
+
+    expected = call()
+
+    assert expected in repository.get_all.mock_calls
+
+def test_user_controller_get_calls_get_by_id_in_repository(
+        controller: UserController,
+        repository: Mock):
+    controller.get(999)
+
+    expected = call(999)
+
+    assert expected in repository.get_by_id.mock_calls  

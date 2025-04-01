@@ -10,6 +10,12 @@ class UserController():
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
+    def get(self, id):
+        return self.user_repository.get_by_id(id)
+    
+    def get_all(self):
+        return self.user_repository.get_all()
+
     def create(self, dict) -> User:
         first_name = dict["firstname"]
         last_name = dict["lastname"]
@@ -42,3 +48,6 @@ class UserController():
 
         if "group" in dict:
             user.group = dict["group"]
+
+    def delete(self, id):
+        self.user_repository.delete_by_id(id)

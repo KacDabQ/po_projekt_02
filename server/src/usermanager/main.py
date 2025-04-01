@@ -12,12 +12,14 @@ def main_menu():
 
 @app.route("/users", methods=['GET'])
 def get_all_users():
-    return [p.to_json() for p in user_repository.get_all()], 200
+    controller = UserController(user_repository)
+    return [p.to_json() for p in controller.get_all()], 200
 
 
 @app.route("/users/<int:id>", methods=["GET"])
 def get_user_by_id(id):
-    user = user_repository.get_by_id(id)
+    controller = UserController(user_repository)
+    user = controller.get(id)
     if user is None:
         return "User not found", 404
 
@@ -49,8 +51,9 @@ def update_user(id):
 
 @app.route("/users/<int:id>", methods=["DELETE"])
 def delete_user_by_id(id):
+    controller = UserController(user_repository)
     try:
-        user_repository.delete_by_id(id)
+        controller.delete(id)
         return "Succesfully deleted person", 200
     except UserNotFound:
         return "User not found", 404
